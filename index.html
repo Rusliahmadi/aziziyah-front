@@ -1,14 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Frontend</title>
+  <title>Beranda Aziziyah</title>
+  <link rel="stylesheet" href="./css/style.css" />
 </head>
 <body>
-  <h1>Data from Backend</h1>
-  <ul id="data-list"></ul>
+  <div id="navbar"></div>
 
-  <script src="script.js"></script>
+  <h2>Jumlah Santri per Kelas</h2>
+  <div id="kelas-container"></div>
+
+  <!-- Filter untuk Absen -->
+      <section id="rekap-charts-container" style="display: flex; gap: 1rem; flex-wrap: nowrap; justify-content: center; box-sizing: border-box; width: 100%;">
+      <div class="chart-wrapper" style="flex: 0 0 39%; max-width: 39%; height: 500px; box-sizing: border-box; border: 1px solid #ffffff; padding: 1rem; border-radius: 8px;">
+        <h2>Persentase Kehadiran Santri</h2>
+        <canvas id="rekapAbsensiChart"></canvas>
+      </div>
+      <div class="chart-wrapper" style="flex: 0 0 59%; max-width: 59%; height: 500px; box-sizing: border-box; border: 1px solid #ffffff; padding: 1rem; border-radius: 8px;">
+        <h2>Materi Kelas Yang Tercapai</h2>
+        <canvas id="rekapMateriChart"></canvas>
+      </div>
+    </section>
+
+    <!-- Jurnal -->
+        <h2 style="margin-top: 8rem;">Materi Terakhir Dikaji</h2>
+    <table id="tabel-jurnal" style="margin-top: 0rem;">
+        <thead>
+            <tr>
+                <th>Materi</th>
+                <th>Halaman</th>
+                <th>Ayat</th>
+                <th>Target</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="./scripts/chart.min.js"></script>
+    <script src="./scripts/index.js"></script>
+    <script src="./scripts/rekap-materi.js"></script>
+    <script src="./scripts/rekap-jurnal.js"></script>
+  <script src="./scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+  
 </body>
 </html>
