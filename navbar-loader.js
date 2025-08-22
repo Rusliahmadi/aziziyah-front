@@ -14,7 +14,7 @@ function loadNavbar() {
   const basePath = getBasePath();
 
   // 💡 Otomatis sesuaikan path ke navbar.html
-  const navbarPath = basePath + 'component/navbar.html';
+  const navbarPath = basePath + 'navbar.html';
 
   fetch(navbarPath)
     .then(res => {
@@ -59,3 +59,4 @@ function loadNavbar() {
       console.error('Gagal memuat navbar:', err);
     });
 }
+
