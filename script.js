@@ -14,7 +14,7 @@ function loadNavbar() {
 
 // Fungsi untuk memuat data dari backend
 function loadDataFromAPI() {
-  fetch('https://your-backend-host.com/api/data') // ganti dengan URL backend kamu
+  fetch('https://github.com/Rusliahmadi/aziziyah-back.git') // ganti dengan URL backend kamu
     .then(response => response.json())
     .then(data => {
       const list = document.getElementById('data-list');
@@ -35,4 +35,5 @@ window.addEventListener('DOMContentLoaded', () => {
     loadDataFromAPI(); // dijalankan setelah navbar berhasil dimuat
   });
 });
+
 
