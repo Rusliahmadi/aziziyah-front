@@ -41,10 +41,15 @@
     <script src="index.js"></script>
     <script src="rekap-materi.js"></script>
     <script src="rekap-jurnal.js"></script>
-  <script src="navbar-loader.js"></script>
-  <script>loadNavbar();</script>
+    <script>fetch('navbar.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('navbar-container').innerHTML = html;
+      });
+    </script>
   
 </body>
 </html>
+
 
 
