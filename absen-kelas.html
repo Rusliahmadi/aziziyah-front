@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Form Absen Santri</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  <h1>Form Absensi Santri</h1>
+
+  <form id="form-absen">
+
+    <!-- Pilihan Kelas -->
+    <div class="form-section">
+      <label for="pilihKelas">Pilih Kelas:</label>
+      <select id="pilihKelas" required>
+        <option value="">Pilih Kelas</option>
+        <!-- Opsi kelas akan diisi via JavaScript -->
+      </select>
+
+    <!-- Pilihan Tanggal -->
+      <label for="tanggalAbsen">Tanggal:</label>
+      <input type="date" id="tanggalAbsen" required />
+
+    <!-- Pilihan Sesi -->
+      <label for="pilihSesi">Pilih Sesi:</label>
+      <select id="pilihSesi" required>
+        <option value="">Pilih Sesi</option>
+        <option value="Ba'da subuh">Ba'da Subuh</option>
+        <option value="Pagi">Pagi</option>
+        <option value="Siang">Siang</option>
+        <option value="Malam">Malam</option>
+      </select>
+    </div>    
+
+    <!-- Tabel Absensi -->
+    <table id="table-absen">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Panggilan</th>
+          <th>Hadir</th>
+          <th>Izin</th>
+          <th>Sakit</th>
+          <th>Alpa</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Baris-baris santri akan diisi via JavaScript -->
+      </tbody>
+    </table>
+
+    <!-- Tombol Submit & kembali -->
+    <div class="form-section">
+      <button type="submit">💾</button>  
+    </div>
+   
+  </form>
+  <!-- Script muasukkan di bawah -->
+  <script src="../../scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+  <script src="../../scripts/absen-kelas.js"></script>
+</body>
+</html>

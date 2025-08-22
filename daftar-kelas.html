@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Daftar Kelas</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  <h1>Daftar Kelas</h1>
+
+  <div class="form-buttons">
+    <button id="btn-input-kelas">➕</button>
+  </div>
+
+  <table border="1" cellpadding="10" cellspacing="0" id="table-kelas">
+    <thead>
+      <tr>
+        <th>Nama Kelas</th>
+        <th>Wali Kelas</th>
+        <th>Ketua</th>
+        <th>KU</th>
+        <th>Penerobos</th>
+        <th>Opsi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data kelas akan di-render oleh JavaScript -->
+    </tbody>
+  </table>
+
+  <script src="../../scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+  <script src="../../scripts/kelas.js"></script>
+</body>
+</html>

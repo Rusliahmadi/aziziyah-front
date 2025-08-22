@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kelas</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>.jumlah {
+    margin-top: 10px;
+    padding: 12px 16px;
+    background-color: #fff3cd;
+    color: #856404;
+    font-weight: bold;
+    font-size: 1.6em;
+    border: 1px solid #ffeeba;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: fit-content;
+    float: left;
+  }
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+  <h1>Data Kelas</h1>
+
+  <label for="kelasSelect">Kelas:</label>
+  <select id="kelasSelect">
+    <option value="">-- Pilih Kelas --</option>
+  </select>
+
+  <p>Wali Kelas: <span id="waliKelas">-</span></p>
+
+  <table id="santriTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Nama</th>
+        <th>Alamat</th>
+        <th>Dapukan</th>
+        <th>Kelompok</th>
+      </tr>
+    </thead>
+    <tbody id="santriTableBody"></tbody>
+  </table>
+
+  <div class="jumlah">Jumlah santri: <span id="jumlahSantri">0</span> orang</div>
+
+  <script src="../../scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+  <script src="../../scripts/data-kelas.js"></script>
+</body>
+</html>

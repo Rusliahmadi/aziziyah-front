@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Laporan Santri</title>
+  <style>
+    #santriDetail {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    #pdfHeader {
+      text-align: center;
+      border-bottom: 2px solid #ffffff;
+      margin-bottom: 20px;
+    }
+    #pdfHeader img {
+      height: 60px;
+      margin-bottom: 10px;
+    }
+    h2, h3 {
+      margin: 8px 0 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ffffff;
+      padding: 4px 6px;
+      text-align: left;
+    }
+    p {
+      margin: 4px 0;
+    }
+    #pdfFooter {
+      margin-top: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .ttd {
+      text-align: center;
+      width: 45%;
+    }
+    .jabatan {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .ttd-space {
+      height: 60px;
+    }
+    .garis-ttd {
+      border-top: 1px solid #ffffff;
+      width: 80%;
+      margin: 0 auto;
+      padding-top: 5px;
+    }
+    @media print {
+      button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button onclick="window.location.href='data-santri.html'">🔙</button>
+  <br><br>
+  
+  <div id="santriDetail">
+    <div id="pdfHeader">
+      <table style="width: 100%;">
+        <tr>
+          <td style="width: 80px;">
+            <img src="../../images/aziziyah.png" alt="Logo" style="height: 70px;">
+          </td>
+          <td style="text-align: center;">
+            <h3 style="margin: 0; font-size: 16px;">PONDOK PESANTREN AL-AZIZIYAH</h3>
+            <p style="margin: 2px 0; font-size: 12px;">
+              Jl. Al-Aziziyah Rt.02, Kec. Sungai Pinang, Samarinda<br>
+              Telp. 0812345678 &bull; Email: pesantren@gmail.com
+            </p>
+          </td>
+          <td style="width: 80px;"></td>
+        </tr>
+      </table>
+      <hr style="border: 1px solid #ffffff;">
+      <h2 style="text-align: center;">Laporan Evaluasi Santri</h2>
+    </div>
+
+    <div id="identitas-santri">
+      <p><strong>Nama:</strong> <span id="namaSantri"></span></p>
+      <p><strong>Alamat:</strong> <span id="alamatSantri"></span></p>
+      <p><strong>Tanggal Masuk Pondok:</strong> <span id="tglMasuk"></span></p>
+      <div id="riwayatKelas"></div>
+    </div>
+
+    <h3>Progres Materi</h3>
+    <table>
+      <thead>
+        <tr><th>Kelas</th><th>Materi</th><th>Halaman</th><th>Keterangan</th></tr>
+      </thead>
+      <tbody id="tabelRaport"></tbody>
+    </table>
+    <p id="totalProgres" style="font-weight:bold;"></p>
+
+    <h3>Rekap Absensi</h3>
+    <table>
+      <thead>
+        <tr><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alpa</th></tr>
+      </thead>
+      <tbody id="rekapAbsen"></tbody>
+    </table>
+    <p id="persenKehadiran" style="font-weight:bold;"></p>
+
+    <div id="pdfFooter">
+      <div class="ttd">
+        <div class="jabatan">Admin DB</div>
+        <div class="ttd-space"></div>
+        <div class="garis-ttd">(___________________)</div>
+      </div>
+      <div class="ttd">
+        <div class="jabatan">Wali Kelas</div>
+        <div class="ttd-space"></div>
+        <div class="garis-ttd">(___________________)</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../scripts/laporan-santri.js"></script>
+</body>
+</html>

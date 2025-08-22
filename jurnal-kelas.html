@@ -1,0 +1,68 @@
+<!-- pages/kbm/jurnal-kelas.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Jurnal Kelas</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+  <div id="navbar"></div>
+  <h1>Jurnal Kelas</h1>
+
+  <form id="form-jurnal">
+    <label for="tanggal">Tanggal:</label>
+    <input type="date" id="tanggal" name="tanggal" required />
+
+    <label for="hari">Hari:</label>
+    <input type="text" id="hari" name="hari" placeholder="Contoh: Senin" required />
+
+    <label for="kelas">Kelas:</label>
+    <select id="kelas" name="kelas" required>
+      <option value="">Pilih Kelas</option>
+      <!-- opsi kelas -->
+    </select>
+
+    <label for="guru">Guru:</label>
+    <select id="guru" name="guru" required>
+      <option value="">Pilih Guru</option>
+      <!-- opsi guru -->
+    </select>
+
+    <label for="jam_mulai">Jam Mulai:</label>
+    <input type="time" id="jam_mulai" name="jam_mulai" required />
+
+    <label for="jam_selesai">Jam Selesai:</label>
+    <input type="time" id="jam_selesai" name="jam_selesai" required />
+
+    <label for="materi">Materi:</label>
+    <select id="materi" name="materi" required>
+      <option value="">Pilih Materi</option>
+      <!-- opsi materi akan diisi otomatis -->
+    </select>
+
+    <label for="hal">Sampai Halaman:</label>
+    <input type="text" id="hal" name="hal">
+
+    <label for="ayat">Ayat/Baris:</label>
+    <input type="text" id="ayat" name="ayat">
+
+    <label for="target_halaman">Target Halaman:</label>
+    <input type="number" id="target_halaman" name="target_halaman" readonly />
+
+    <label for="halaman_dicapai">Halaman yang Dicapai:</label>
+    <input type="number" step="any" min="0" id="halaman_dicapai" name="halaman_dicapai" required />
+
+    <label for="status">Status:</label>
+    <input type="text" id="status" name="status" readonly />
+
+    <button type="submit">💾</button>
+    <button type="reset">❌</button>
+</form>
+
+  <script src="../../scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+  <script src="../../scripts/jurnal-kelas.js"></script>
+</body>
+</html>

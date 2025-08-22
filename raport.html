@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rekap Raport Santri</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+  <label for="filterKelasUtama">Raport Santri Kelas:</label>
+    <select id="filterKelasUtama">
+      <option value="">  Pilih Kelas  </option>
+    </select>
+
+  <h1>Raport Santri</h1>
+
+  <div>
+    <label for="filterNama">Nama Santri:</label>
+    <select id="filterNama">
+      <option value=""> Pilih Nama </option>
+      <!-- Nama santri akan diisi oleh JS -->
+    </select>
+  </div>
+
+  <div>
+    <label for="filterKelas">Raprt Kelas:</label>
+    <select id="filterKelas" disabled>
+      <option value="">  Pilih Kelas  </option>
+      <!-- Kelas berdasarkan santri yang dipilih -->
+    </select>
+  </div>
+
+  <div>
+    <label for="tanggalMasuk">Tanggal Masuk Kelas:</label>
+    <input type="text" id="tanggalMasuk" readonly placeholder="" />
+  </div>
+
+  <div>
+    <label for="tanggalLulus">Tanggal Lulus Kelas:</label>
+    <input type="text" id="tanggalLulus" readonly placeholder="" />
+    <a href="./input-raport.html"><button>+Raport Baru</button></a>
+  </div>
+
+  <hr />
+
+  <div id="hasil">
+    <!-- Tabel data akan muncul di sini -->
+  </div>  
+
+  <script src="../../scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+  <script src="../../scripts/raport.js"></script>
+</body>
+</html>

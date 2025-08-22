@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Input Data Kelas</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <h1>Input Data Kelas</h1>
+
+  <form id="form-kelas">
+    <label for="nama">Nama Kelas</label>
+    <input type="text" id="nama" name="nama" required>
+
+    <label for="wali_kelas">Wali Kelas:</label>
+      <select id="wali_kelas" name="wali_kelas">
+      <option value="">-- Pilih Guru --</option>
+    </select>
+
+    <label>Ketua:</label>
+    <select id="ketua" name="ketua" required></select>
+
+    <label>KU:</label>
+    <select id="ku" name="ku" required></select>
+
+    <label>Penerobos:</label>
+    <select id="penerobos" name="penerobos" required></select>
+
+    <div class="form-buttons">
+      <button type="submit">💾</button>
+      <button type="button" id="btn-batal">❌</button>
+      <button type="button" id="btn-kembali">🔙</button>
+    </div>
+
+  </form>
+
+  <script src="../../scripts/kelas.js"></script>
+</body>
+</html>

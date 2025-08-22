@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rekap Jurnal Kelas</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+
+  <h1>Rekap Jurnal Kelas</h1>
+
+  <label for="filterGuru">Filter Guru:</label>
+    <select id="filterGuru">
+      <option value="">-- Semua Guru --</option>
+    </select>
+
+  <a href="./rekap-materi.html"><button>📊</button></a>
+
+  <table border="1" cellpadding="10" cellspacing="0" id="tabel-jurnal">
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th>Kelas</th>
+        <th>Guru</th>
+        <th>Mulai</th>
+        <th>Selesai</th>
+        <th>Durasi</th>
+        <th>Materi</th>
+        <th>Hal</th>
+        <th>Ayat/Baris</th>
+        <th>Target</th>
+        <th>Tercapai</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="../../scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+  <script src="../../scripts/jurnal-kelas.js"></script>
+</body>
+</html>

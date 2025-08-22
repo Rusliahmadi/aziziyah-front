@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Anggota Kelompok</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+  <style>
+  .jumlah {
+    margin-top: 10px;
+    padding: 12px 16px;
+    background-color: #fff3cd;
+    color: #856404;
+    font-weight: bold;
+    font-size: 1.6em;
+    border: 1px solid #ffeeba;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: fit-content;
+    float: left;
+  }
+</style>
+
+</head>
+<body>
+  <div id="navbar"></div>
+  <h1>Daftar Anggota per Kelompok</h1>
+  <label for="filterKelompok">Pilih Kelompok:</label>
+  <select id="filterKelompok">
+    <option value="">-- Pilih Kelompok --</option>
+  </select>
+
+  <div id="detailKelompok" style="margin-top: 20px; display: none;">
+    <p><strong>Wali 1:</strong> <span id="wali1"></span></p>
+    <p><strong>Wali 2:</strong> <span id="wali2"></span></p>
+
+    <table id="tabelAnggota">
+      <thead>
+        <tr>
+          <th>Nama Santri</th>
+          <th>Dapukan</th>
+          <th>Kelas</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="jumlah" id="jumlahAnggota"></div>
+  </div>
+
+  <script src="../../scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+  <script src="../../scripts/anggota.js"></script>
+</body>
+</html>

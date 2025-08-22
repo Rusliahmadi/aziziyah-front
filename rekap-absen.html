@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Rekap Absensi</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  <h1>Rekap Absensi</h1>
+
+   <a href="santri-terbules.html"><button>📊</button></a>
+
+   <div class="form-section">
+    <label for="filterKelas">Kelas:</label>
+    <select id="filterKelas">
+      <option value="">Semua Kelas</option>
+      <!-- Opsi kelas akan diisi via JavaScript -->
+    </select>
+
+    <label for="tanggalMulai">Dari Tanggal:</label>
+    <input type="date" id="tanggalMulai" />
+
+    <label for="tanggalSampai">Sampai Tanggal:</label>
+    <input type="date" id="tanggalSampai" />
+
+    <label for="filterSesi">Sesi:</label>
+    <select id="filterSesi">
+    </select>
+
+    <button id="tombolRekap">Show</button>
+  </div>
+
+  <table id="tabelRekap">
+    <thead>
+      <tr>
+        <th>Nama</th>
+        <th>Hadir</th>
+        <th>Izin</th>
+        <th>Sakit</th>
+        <th>Alpa</th>
+        <th>Keterangan</th>
+        <th>% Kehadiran</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data rekap akan dimuat di sini -->
+    </tbody>
+  </table>
+  <p id="totalKehadiran" style="margin-top: 10px; font-weight: bold;"></p>
+
+  <script src="../../scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+  <script src="../../scripts/rekap-absen.js"></script>
+</body>
+</html>

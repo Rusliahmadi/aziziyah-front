@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Input Raport Santri</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <h1>Input Raport Santri</h1>
+
+  <form id="formRaport" autocomplete="off">
+    <label for="kelasSantri">Kelas Santri</label>
+    <select id="kelasSantri" required>
+      <option value="">–Pilih Kelas–</option>
+      <!-- Isi dari JS -->
+    </select>
+
+    <label for="namaSantri">Nama Santri</label>
+    <select id="namaSantri" required>
+      <option value="">–Pilih Nama–</option>
+      <!-- Isi dari JS -->
+    </select>
+
+    <label for="materiKelas">Materi</label>
+    <select id="materiKelas" required>
+      <option value="">–Pilih Materi–</option>
+      <!-- Option dari JS -->
+    </select>
+
+    <label for="tanggalMasuk">Tanggal Masuk</label>
+    <input type="date" id="tanggalMasuk" required />
+
+    <label for="halamanDicapai">Halaman Dicapai</label>
+    <input type="text" id="halamanDicapai" placeholder="Contoh: 1-3,5,7-9" required />
+
+    <!-- Container checkbox halaman otomatis dibuat oleh JS -->
+
+    <label for="persenCapaian">Persen Capaian</label>
+    <input type="text" id="persenCapaian" readonly placeholder="Otomatis terisi" />
+
+    <label for="tanggalLulus">Tanggal Lulus (opsional)</label>
+    <input type="date" id="tanggalLulus" />
+
+    <div class="form-buttons">
+      <button type="submit">💾</button>
+      <button type="button" id="btn-batal">❌</button>
+      <button type="button" id="btn-kembali">🔙</button>
+    </div>
+  </form>
+
+  <script src="../../scripts/raport.js"></script>
+</body>
+</html>

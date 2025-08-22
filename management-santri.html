@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Santri</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <h1>Manajemen Santri</h1>
+
+  <div id="filterContainer" style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+  <select id="filterKelas">
+    <option value="">-- Semua Kelas --</option>
+    <option value="belum">Belum Memiliki Kelas</option>
+    <!-- opsi lain diisi JS -->
+  </select>
+
+  <div style="position: relative; flex: 1; min-width: 200px; max-width: 250px;">
+    <span style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 16px;">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search..." 
+           style="padding-left: 28px; width: 100%; box-sizing: border-box;" />
+  </div>
+</div>
+
+  <table border="1" id="tabel-santri">
+    <thead>
+      <tr>
+        <th>Nama</th>
+        <th>Panggilan</th>
+        <th>Kelas Utama</th>
+        <th>Kelas Extra</th>
+        <th>Kelompok</th>
+        <th>Status</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  
+    <a href="data-santri.html">
+        <button>🔙</button>
+    </a>
+  <script src="../../scripts/management-santri.js"></script>
+</body>
+</html>

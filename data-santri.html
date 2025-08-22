@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daftar Santri</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+  <style>
+   .filter-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  /* Bungkus pasangan label+dropdown */
+  .filter-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Dropdown */
+  .filter-kecil {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
+  /* Search */
+  .search-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 4px 8px;
+    background-color: #fff;
+  }
+
+  .search-container input {
+    border: none;
+    outline: none;
+    padding: 4px 8px;
+    font-size: 14px;
+    width: 180px;
+  }
+
+  .search-icon {
+    margin-right: 5px;
+    color: #888;
+    font-size: 16px;
+  }
+
+  /* Menu toggle */
+  .menu-container {
+    position: relative;
+    display: inline-block;
+    margin-left: auto;
+  }
+
+  .menu-toggle {
+    font-size: 20px;
+    background-color: transparent;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+  }
+
+  .menu-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 36px;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 10px;
+    border-radius: 6px;
+    z-index: 999;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 160px;
+  }
+
+  .menu-dropdown button,
+  .menu-dropdown a > button {
+    background-color: #349890;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+  }
+
+  .menu-dropdown button:hover,
+  .menu-dropdown a > button:hover {
+    background-color: #2e7f79;
+  }
+
+  /* Tampilkan menu saat show class ada */
+  .menu-container.show .menu-dropdown {
+    display: flex;
+  }
+
+  .nama-santri-link:hover {
+   font-weight: bold;
+  }
+
+  </style>
+</head>
+<body>
+
+  <div id="navbar"></div>
+
+  <h1>Daftar Santri Aktif</h1>  
+
+  <div class="filter-container">
+  <label for="filterKelas">Kelas:</label>
+  <select id="filterKelas" class="filter-kecil">
+    <option value="">Semua Kelas</option>
+  </select>
+
+  <label for="filterKelompok">Kelompok:</label>
+  <select id="filterKelompok" class="filter-kecil">
+    <option value="">Semua Kelompok</option>
+  </select>
+
+  <!-- 🔍 Pencarian -->
+  <div class="search-container">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchSantri" placeholder="Search..." />
+  </div>
+
+  <!-- ⋮ Menu -->
+  <div class="menu-container">
+    <button class="menu-toggle">⋮</button>
+    <div class="menu-dropdown">
+      <button id="btn-input-santri">Tambah Santri</button>
+      <a href="management-santri.html"><button>Kelola Santri</button></a>
+      <a href="raport.html"><button>Raport</button></a>
+    </div>
+  </div>
+</div>
+
+  <table id="table-santri">
+    <thead>
+      <tr>
+        <th>Nama</th>
+        <th>Panggilan</th>
+        <th>JK</th>
+        <th>Tanggal Lahir</th>
+        <th>Orang Tua / Wali</th>
+        <th>Alamat</th>
+        <th>Tanggal Masuk</th>
+        <th>Kelas Utama</th>
+        <th>Kelas Extra</th>
+        <th>Kelompok</th>
+        <th>Status</th>
+        <th>Opsi</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Data santri akan di-render di sini -->
+    </tbody>
+  </table>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const menuContainer = document.querySelector('.menu-container');
+    const menuToggle = document.querySelector('.menu-toggle');
+
+    menuToggle.addEventListener('click', () => {
+      menuContainer.classList.toggle('show');
+    });
+
+    // Tutup menu saat klik di luar
+    document.addEventListener('click', (e) => {
+      if (!menuContainer.contains(e.target)) {
+        menuContainer.classList.remove('show');
+      }
+    });
+  });
+  </script>
+
+  
+  <script src="../../scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+
+  <script src="../../scripts/santri.js"></script>
+
+</body>
+</html>

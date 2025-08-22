@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Input Materi</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <h1>Input Materi</h1>
+
+<form id="form-materi">
+  <label for="jenis">Jenis</label>
+  <select id="jenis" required>
+    <option value="">-- Pilih Jenis --</option>
+    <option value="Al-Qur'an">Al-Qur'an</option>
+    <option value="Himpunan">Himpunan</option>
+    <option value="Hafalan">Hafalan</option>
+  </select>
+
+  <label for="materi">Nama Materi</label>
+  <input type="text" id="materi" required>
+
+  <label for="kelas">Kelas</label>
+  <select id="kelas" required>
+    <option value="">-- Pilih Kelas --</option>
+    <!-- Opsi diisi otomatis via JavaScript -->
+  </select>
+
+
+  <label for="jumlah_halaman">Jumlah Halaman</label>
+  <input type="number" id="jumlah_halaman" required>
+
+ <label for="nomor_halaman">Halaman Awal</label>
+ <input type="number" id="nomor_halaman" placeholder="Misal: 121" required>
+
+  <label for="target_per_hari">Target Halaman / Hari</label>
+  <input type="number" step="any" name="target_per_hari" id="target_per_hari" required>
+
+  <div class="form-buttons">
+    <button type="submit">💾</button>
+    <button type="button" id="btn-batal">❌</button>
+    <button type="button" id="btn-kembali">🔙</button>
+  </div>
+</form>
+
+  <script src="../../scripts/materi.js"></script>
+</body>
+</html>

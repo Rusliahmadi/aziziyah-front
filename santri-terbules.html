@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Santri Terbules</title>
+  <link rel="stylesheet" href="../../css/style.css">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .filter-controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    button {
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    @media print {
+      .filter-controls {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button onclick="window.location.href='rekap-absen.html'">🔙</button>
+
+  <h1>Daftar Santri dengan Ketidakhadiran Terbanyak</h1>
+
+  <div class="filter-controls">
+    <label>Dari tanggal: <input type="date" id="tanggalMulai"></label>
+    <label>Sampai tanggal: <input type="date" id="tanggalSampai"></label>
+    <button id="tombolTampilkan">Tampilkan</button>
+  </div>
+
+  <div id="areaCetak">
+    <table id="tabelSantri">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Kelas</th>
+          <th>Izin</th>
+          <th>Sakit</th>
+          <th>Alpa</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script src="../../scripts/santri-terbules.js"></script>
+</body>
+</html>

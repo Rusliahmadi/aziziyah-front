@@ -1,0 +1,56 @@
+<!-- /pages/kelompok/input-kelompok.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Input Kelompok</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body>
+  <h1>Input Kelompok</h1>
+  <form id="form-kelompok">
+    <label>Nama Kelompok</label>
+    <input type="text" name="nama" required />
+
+    <label>Wali 1</label>
+    <select name="wali1" id="wali1">
+      <option value="">-- Pilih Wali 1 --</option>
+    </select>
+
+    <label>Wali 2</label>
+    <select name="wali2" id="wali2">
+      <option value="">-- Pilih Wali 2 --</option>
+    </select>
+
+    <div class="form-group">
+      <label for="ketua">Ketua</label>
+      <select name="ketua" id="ketua">
+        <option value="">-- Pilih Ketua --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="ku">KU</label>
+      <select name="ku" id="ku">
+        <option value="">-- Pilih KU --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="penerobos">Penerobos</label>
+      <select name="penerobos" id="penerobos">
+        <option value="">-- Pilih Penerobos --</option>
+      </select>
+    </div>
+
+    <div class="form-buttons">
+      <button type="submit">💾</button>
+      <button type="button" id="btn-batal">❌</button>
+      <button type="button" id="btn-kembali">🔙</button>
+    </div>
+  </form>
+
+
+  <script src="../../scripts/kelompok.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Daftar Materi</title>
+  <link rel="stylesheet" href="../../css/style.css" />
+</head>
+<body>
+  <div id="navbar"></div>
+  <h1>Daftar Materi</h1>
+
+  <div class="filter-dan-button">
+   <div class="form-buttons">
+     <button id="btn-input-materi">➕</button>
+   </div>
+   <div class="filter-kelas">
+     <label for="filterKelas">Filter Kelas:</label>
+     <select id="filterKelas">
+       <option value="">-- Semua Kelas --</option>
+     </select>
+    </div>  
+  </div>
+  
+  <table border="1" cellpadding="10" cellspacing="0" id="table-materi">
+    <thead>
+      <tr>
+        <th>Jenis</th>
+        <th>Materi</th>
+        <th>Kelas</th>
+        <th>Jml Hal</th>
+        <th>Halaman</th>
+        <th>Target/Hari</th>
+        <th>Hari Diperlukan</th>
+        <th>Opsi</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="../../scripts/navbar-loader.js"></script>
+  <script>loadNavbar();</script>
+  <script src="../../scripts/materi.js"></script>
+</body>
+</html>
