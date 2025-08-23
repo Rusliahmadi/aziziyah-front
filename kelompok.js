@@ -123,12 +123,12 @@ window.addEventListener('DOMContentLoaded', () => {
         alert('Data kelompok berhasil disimpan!');
       }
 
-      window.location.href = './kelompok.html';
+      window.location.href = 'kelompok.html';
     });
 
     // Tombol Kembali
     btnKembali?.addEventListener('click', () => {
-      window.location.href = './kelompok.html';
+      window.location.href = 'kelompok.html';
     });
 
     // Tombol Batal
@@ -136,7 +136,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const konfirmasi = confirm('Batalkan perubahan?');
       if (konfirmasi) {
         if (editId) {
-          window.location.href = `./input-kelompok.html?id=${editId}`; // reload form edit
+          window.location.href = `input-kelompok.html?id=${editId}`; // reload form edit
         } else {
           form.reset(); // reset form jika tambah baru
         }
@@ -176,7 +176,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
       document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', () => {
-          window.location.href = `./input-kelompok.html?id=${btn.dataset.id}`;
+          window.location.href = `input-kelompok.html?id=${btn.dataset.id}`;
         });
       });
 
@@ -192,3 +192,4 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
