@@ -48,12 +48,14 @@ nav .logo {
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
+  gap: 0.2rem;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 
 .logo-img {
-  height: 40px;
+  height: 20px;
   width: auto;
 }
 
@@ -501,4 +503,5 @@ form#formRaport select:focus {
     height: 100% !important;
   }
 }
+
 
