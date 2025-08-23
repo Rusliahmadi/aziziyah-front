@@ -55,7 +55,7 @@ nav .logo {
 }
 
 .logo-img {
-  height: 20px;
+  height: 2px;
   width: auto;
 }
 
@@ -503,5 +503,6 @@ form#formRaport select:focus {
     height: 100% !important;
   }
 }
+
 
 
