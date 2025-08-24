@@ -7,12 +7,13 @@ window.addEventListener('DOMContentLoaded', () => {
   let kelompokList = [];
   let allSantri = [];
 
-  // Ambil data kelas
+  // Ambil data kelas dari main process
   window.electronAPI.mintaDataKelas();
   window.electronAPI.terimaDataKelas((data) => {
     kelasList = data;
 
     if (filterKelas) {
+      // Isi opsi filter kelas
       filterKelas.innerHTML = `
         <option value="">-- Semua Kelas --</option>
         <option value="belum">Belum Memiliki Kelas</option>
@@ -30,14 +31,14 @@ window.addEventListener('DOMContentLoaded', () => {
     tryLoadSantri();
   });
 
-  // Ambil data kelompok
+  // Ambil data kelompok dari main process
   window.electronAPI.mintaDataKelompok();
   window.electronAPI.terimaDataKelompok((data) => {
     kelompokList = data;
     tryLoadSantri();
   });
 
-  // Ambil data santri
+  // Ambil data santri setelah data kelas dan kelompok sudah siap
   function tryLoadSantri() {
     if (kelasList.length === 0 || kelompokList.length === 0) return;
 
@@ -48,27 +49,29 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Fitur pencarian
+  // Pasang event listener untuk pencarian
   if (searchInput) {
     searchInput.addEventListener('input', renderSantri);
   }
 
+  // Fungsi render daftar santri dengan filter dan pencarian
   function renderSantri() {
     tbody.innerHTML = '';
 
     const selectedFilter = filterKelas ? filterKelas.value : '';
     const keyword = searchInput ? searchInput.value.trim().toLowerCase() : '';
 
-    // Filter santri berdasarkan kelas
+    // Filter berdasarkan kelas dan pencarian nama/alias
     let santriFiltered = allSantri.filter(s => {
       // Filter kelas
       const matchKelas =
         selectedFilter === '' ||
         (selectedFilter === 'belum' &&
           (!s.kelas_utama || s.kelas_utama === '-' || s.kelas_utama === null || s.kelas_utama === '')) ||
-        s.kelas_utama === selectedFilter || s.kelas_extra === selectedFilter;
+        s.kelas_utama === selectedFilter ||
+        s.kelas_extra === selectedFilter;
 
-      // Filter pencarian nama/alias
+      // Filter pencarian nama atau alias
       const matchSearch =
         s.nama.toLowerCase().includes(keyword) ||
         (s.alias && s.alias.toLowerCase().includes(keyword));
@@ -76,91 +79,67 @@ window.addEventListener('DOMContentLoaded', () => {
       return matchKelas && matchSearch;
     });
 
-    // Urutkan agar yang belum punya kelas utama muncul di atas
+    // Urutkan supaya yang belum punya kelas utama tampil dulu
     santriFiltered.sort((a, b) => {
       const aKosong = !a.kelas_utama || a.kelas_utama === '-' || a.kelas_utama === '';
       const bKosong = !b.kelas_utama || b.kelas_utama === '-' || b.kelas_utama === '';
       return aKosong === bKosong ? 0 : aKosong ? -1 : 1;
     });
 
+    // Buat baris tabel per santri
     santriFiltered.forEach(santri => {
       const tr = document.createElement('tr');
 
-      // Nama
+      // Kolom Nama
       const tdNama = document.createElement('td');
       tdNama.textContent = santri.nama;
       tr.appendChild(tdNama);
 
-      // Alias
+      // Kolom Alias
       const tdAlias = document.createElement('td');
       tdAlias.textContent = santri.alias || '-';
       tr.appendChild(tdAlias);
 
-      // Kelas Utama
+      // Kolom Kelas Utama (dropdown)
       const tdKelasUtama = document.createElement('td');
       const selectKelasUtama = document.createElement('select');
-      const kosongUtama = document.createElement('option');
-      kosongUtama.value = '';
-      kosongUtama.textContent = '-- pilih kelas --';
-      selectKelasUtama.appendChild(kosongUtama);
+      selectKelasUtama.appendChild(createOption('', '-- pilih kelas --', santri.kelas_utama));
       kelasList.forEach(k => {
-        const opt = document.createElement('option');
-        opt.value = k.nama;
-        opt.textContent = k.nama;
-        if (k.nama === santri.kelas_utama) opt.selected = true;
-        selectKelasUtama.appendChild(opt);
+        selectKelasUtama.appendChild(createOption(k.nama, k.nama, santri.kelas_utama));
       });
       tdKelasUtama.appendChild(selectKelasUtama);
       tr.appendChild(tdKelasUtama);
 
-      // Kelas Ekstra
+      // Kolom Kelas Ekstra (dropdown)
       const tdKelasExtra = document.createElement('td');
       const selectKelasExtra = document.createElement('select');
-      const kosongExtra = document.createElement('option');
-      kosongExtra.value = '';
-      kosongExtra.textContent = '-- tidak ada --';
-      selectKelasExtra.appendChild(kosongExtra);
+      selectKelasExtra.appendChild(createOption('', '-- tidak ada --', santri.kelas_extra));
       kelasList.forEach(k => {
-        const opt = document.createElement('option');
-        opt.value = k.nama;
-        opt.textContent = k.nama;
-        if (k.nama === santri.kelas_extra) opt.selected = true;
-        selectKelasExtra.appendChild(opt);
+        selectKelasExtra.appendChild(createOption(k.nama, k.nama, santri.kelas_extra));
       });
       tdKelasExtra.appendChild(selectKelasExtra);
       tr.appendChild(tdKelasExtra);
 
-      // Kelompok
+      // Kolom Kelompok (dropdown)
       const tdKelompok = document.createElement('td');
       const selectKelompok = document.createElement('select');
-      const kosongKelompok = document.createElement('option');
-      kosongKelompok.value = '';
-      kosongKelompok.textContent = '-- tidak ada --';
-      selectKelompok.appendChild(kosongKelompok);
+      selectKelompok.appendChild(createOption('', '-- tidak ada --', santri.kelompok));
       kelompokList.forEach(kel => {
-        const opt = document.createElement('option');
-        opt.value = kel.nama;
-        opt.textContent = kel.nama;
-        if (kel.nama === santri.kelompok) opt.selected = true;
-        selectKelompok.appendChild(opt);
+        selectKelompok.appendChild(createOption(kel.nama, kel.nama, santri.kelompok));
       });
       tdKelompok.appendChild(selectKelompok);
       tr.appendChild(tdKelompok);
 
-      // Status
+      // Kolom Status (dropdown)
       const tdStatus = document.createElement('td');
       const selectStatus = document.createElement('select');
       ['aktif', 'nonaktif', 'lulus', 'pindah'].forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = s;
-        if (s === santri.status) opt.selected = true;
-        selectStatus.appendChild(opt);
+        selectStatus.appendChild(createOption(s, s, santri.status));
       });
       tdStatus.appendChild(selectStatus);
       tr.appendChild(tdStatus);
 
-      // Tombol Simpan
+      // Kolom aksi (tombol simpan)
       const tdAksi = document.createElement('td');
       const btnSimpan = document.createElement('button');
       btnSimpan.textContent = '💾';
@@ -180,5 +159,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
       tbody.appendChild(tr);
     });
+  }
+
+  // Fungsi bantu membuat <option>
+  function createOption(value, text, selectedValue) {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = text;
+    if (value === selectedValue) opt.selected = true;
+    return opt;
   }
 });
