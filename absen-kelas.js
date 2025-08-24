@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const selectKelas = document.getElementById('pilihKelas');
   const selectSesi = document.getElementById('pilihSesi');
   const tanggalInput = document.getElementById('tanggalAbsen');
@@ -10,17 +10,20 @@ window.addEventListener('DOMContentLoaded', () => {
   // Set default tanggal hari ini
   tanggalInput.valueAsDate = new Date();
 
-  // Ambil data santri dari main process
-  window.electronAPI.mintaDataSantri();
-
-  window.electronAPI.terimaDataSantri((data) => {
-    semuaSantri = data.map(s => ({
-      ...s,
-      kelas: s.kelas_utama || ''
-    }));
-
-    isiDropdownKelas(semuaSantri);
-  });
+  // Ambil data santri dari API
+  fetch('/api/santri')
+    .then(res => res.json())
+    .then(data => {
+      semuaSantri = data.map(s => ({
+        ...s,
+        kelas: s.kelas_utama || ''
+      }));
+      isiDropdownKelas(semuaSantri);
+    })
+    .catch(err => {
+      console.error('Gagal mengambil data santri:', err);
+      alert('Gagal mengambil data santri.');
+    });
 
   function isiDropdownKelas(data) {
     const kelasSet = new Set();
@@ -116,12 +119,27 @@ window.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    window.electronAPI.kirimDataAbsen(dataAbsen);
-    alert('Data absen berhasil disimpan!');
-
-    // Reset
-    tbody.innerHTML = '';
-    selectKelas.value = '';
-    selectSesi.value = '';
+    // Kirim data ke backend
+    fetch('/api/absen', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dataAbsen)
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Gagal menyimpan data');
+        return res.json();
+      })
+      .then(() => {
+        alert('Data absen berhasil disimpan!');
+        tbody.innerHTML = '';
+        selectKelas.value = '';
+        selectSesi.value = '';
+      })
+      .catch(err => {
+        console.error('Gagal kirim data absen:', err);
+        alert('Terjadi kesalahan saat menyimpan data.');
+      });
   });
 });
