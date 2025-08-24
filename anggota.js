@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const filterKelompok = document.getElementById('filterKelompok');
   const tabelBody = document.querySelector('#tabelAnggota tbody');
   const wali1Span = document.getElementById('wali1');
@@ -9,22 +9,21 @@ window.addEventListener('DOMContentLoaded', () => {
   let semuaKelompok = [];
   let semuaSantri = [];
 
-  // Minta data kelompok dan santri dari main process
-  window.electronAPI.mintaDataKelompok();
-  window.electronAPI.mintaDataSantri();
-
-  // Terima data kelompok dan isi dropdown
-  window.electronAPI.terimaDataKelompok((dataKelompok) => {
+  // Ambil data dari API
+  Promise.all([
+    fetch('/api/kelompok').then(res => res.json()),
+    fetch('/api/santri').then(res => res.json())
+  ])
+  .then(([dataKelompok, dataSantri]) => {
     semuaKelompok = dataKelompok;
-    isiDropdownKelompok(dataKelompok);
-  });
-
-  // Terima data santri, filter hanya yang statusnya aktif
-  window.electronAPI.terimaDataSantri((dataSantri) => {
     semuaSantri = dataSantri.filter(s => s.status === 'aktif');
+    isiDropdownKelompok(semuaKelompok);
+  })
+  .catch(err => {
+    console.error('Gagal mengambil data:', err);
+    alert('Gagal memuat data kelompok atau santri.');
   });
 
-  // Fungsi isi dropdown kelompok
   function isiDropdownKelompok(data) {
     filterKelompok.innerHTML = '<option value="">-- Pilih Kelompok --</option>'; // reset dulu
     data.forEach(k => {
@@ -50,7 +49,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     let anggota = semuaSantri.filter(s => s.kelompok === namaKelompok);
 
-    // Urutkan anggota sesuai prioritas jabatan: Ketua, KU, Penerobos, Anggota biasa
+    // Urutkan anggota sesuai prioritas jabatan
     anggota.sort((a, b) => {
       const getRank = (s) => {
         if (s.nama === kelompok.ketua) return 1;
