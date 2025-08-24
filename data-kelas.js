@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const kelasSelect = document.getElementById('kelasSelect');
   const waliKelasEl = document.getElementById('waliKelas');
   const table = document.getElementById('santriTable');
@@ -9,23 +9,25 @@ window.addEventListener('DOMContentLoaded', () => {
   let dataSantri = [];
 
   // Ambil data dari backend
-  window.electronAPI.mintaDataKelas();
-  window.electronAPI.mintaDataSantri();
+  Promise.all([
+    fetch('/api/kelas').then(res => res.json()),
+    fetch('/api/santri').then(res => res.json())
+  ])
+    .then(([kelasList, santriList]) => {
+      dataKelas = kelasList;
+      dataSantri = santriList.filter(s => s.status === 'aktif');
 
-  window.electronAPI.terimaDataKelas((kelasList) => {
-    dataKelas = kelasList;
-    kelasList.forEach(kelas => {
-      const opt = document.createElement('option');
-      opt.value = kelas.nama;
-      opt.textContent = kelas.nama;
-      kelasSelect.appendChild(opt);
+      kelasList.forEach(kelas => {
+        const opt = document.createElement('option');
+        opt.value = kelas.nama;
+        opt.textContent = kelas.nama;
+        kelasSelect.appendChild(opt);
+      });
+    })
+    .catch(err => {
+      console.error('Gagal memuat data:', err);
+      alert('Gagal memuat data kelas atau santri.');
     });
-  });
-
-  window.electronAPI.terimaDataSantri((santriList) => {
-    // Filter santri aktif saja
-    dataSantri = santriList.filter(s => s.status === 'aktif');
-  });
 
   kelasSelect.addEventListener('change', () => {
     const namaKelas = kelasSelect.value;
@@ -37,16 +39,13 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Ambil info kelas sesuai nama kelas yang dipilih
     const kelasInfo = dataKelas.find(k => k.nama === namaKelas);
     waliKelasEl.textContent = kelasInfo ? kelasInfo.wali_kelas || '-' : '-';
 
-    // Filter santri berdasarkan kelas_utama atau kelas_extra yang sesuai
     const filteredSantri = dataSantri.filter(s =>
       s.kelas_utama === namaKelas || s.kelas_extra === namaKelas
     );
 
-    // Pisahkan santri berdasar dapukan
     const ketuaList = [];
     const kuList = [];
     const penerobosList = [];
@@ -63,7 +62,6 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Gabungkan urutan
     const urutSantri = [...ketuaList, ...kuList, ...penerobosList, ...lainnyaList];
 
     tbody.innerHTML = '';
@@ -87,6 +85,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     table.style.display = urutSantri.length ? 'table' : 'none';
-    document.getElementById('jumlahSantri').textContent = urutSantri.length;
+    jumlahEl.textContent = urutSantri.length;
   });
 });
