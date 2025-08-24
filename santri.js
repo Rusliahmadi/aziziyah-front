@@ -20,7 +20,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
                           // Ambil dan tampilkan data santri (READ)
   if (tbody) {
-    fetch('data/santri.json')
+    fetch('aziziyah-back-mysqlhost.up.railway.app/api/santri')
       .then(response => response.json())
       .then(dataSantri => {
         // Gabungkan dengan localStorage jika ada perubahan di browser
@@ -215,3 +215,4 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
