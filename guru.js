@@ -1,4 +1,4 @@
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('form-guru');
   const tbody = document.querySelector('#table-guru tbody');
   const btnInput = document.getElementById('btn-input-guru');
@@ -8,17 +8,18 @@ window.addEventListener('DOMContentLoaded', () => {
   if (form) {
     if (editId) {
       // === MODE EDIT ===
-      window.electronAPI.mintaDataGuru();
-      window.electronAPI.terimaDataGuru((dataGuruList) => {
-        const guru = dataGuruList.find(g => g.id === parseInt(editId));
-        if (guru) {
-          form.nama.value = guru.nama;
-          form.alamat.value = guru.alamat;
-          form.no_hp.value = guru.no_hp;
-          form.dapukan.value = guru.dapukan || '';
-          form.mulai_bertugas.value = guru.mulai_bertugas;
-        }
-      });
+      fetch('/api/guru')
+        .then(res => res.json())
+        .then(dataGuruList => {
+          const guru = dataGuruList.find(g => g.id === parseInt(editId));
+          if (guru) {
+            form.nama.value = guru.nama;
+            form.alamat.value = guru.alamat;
+            form.no_hp.value = guru.no_hp;
+            form.dapukan.value = guru.dapukan || '';
+            form.mulai_bertugas.value = guru.mulai_bertugas;
+          }
+        });
 
       form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -29,10 +30,18 @@ window.addEventListener('DOMContentLoaded', () => {
           dapukan: form.dapukan.value,
           mulai_bertugas: form.mulai_bertugas.value,
         };
-        window.electronAPI.updateGuru(parseInt(editId), dataGuru);
-        alert('Data guru berhasil diperbarui!');
-        sessionStorage.removeItem('editGuruId');
-        window.location.href = './data-guru.html';
+
+        fetch(`/api/guru/${editId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dataGuru)
+        }).then(() => {
+          alert('Data guru berhasil diperbarui!');
+          sessionStorage.removeItem('editGuruId');
+          window.location.href = './data-guru.html';
+        });
       });
     } else {
       // === MODE TAMBAH BARU ===
@@ -47,10 +56,18 @@ window.addEventListener('DOMContentLoaded', () => {
           wali_kelas: "",
           wali_kelompok: "",
         };
-        window.electronAPI.kirimDataGuru(dataGuru);
-        alert('Data guru berhasil disimpan!');
-        sessionStorage.removeItem('form-guru');
-        window.location.href = 'data-guru.html';
+
+        fetch('/api/guru', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dataGuru)
+        }).then(() => {
+          alert('Data guru berhasil disimpan!');
+          sessionStorage.removeItem('form-guru');
+          window.location.href = 'data-guru.html';
+        });
       });
     }
 
@@ -79,18 +96,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // === FUNGSI MEMUAT TABEL GURU ===
   function loadDataGuru() {
     Promise.all([
-      new Promise(resolve => {
-        window.electronAPI.mintaDataGuru();
-        window.electronAPI.terimaDataGuru(resolve);
-      }),
-      new Promise(resolve => {
-        window.electronAPI.mintaDataKelas();
-        window.electronAPI.terimaDataKelas(resolve);
-      }),
-      new Promise(resolve => {
-        window.electronAPI.mintaDataKelompok();
-        window.electronAPI.terimaDataKelompok(resolve);
-      }),
+      fetch('/api/guru').then(res => res.json()),
+      fetch('/api/kelas').then(res => res.json()),
+      fetch('/api/kelompok').then(res => res.json()),
     ]).then(([dataGuru, dataKelas, dataKelompok]) => {
       tbody.innerHTML = '';
 
@@ -123,9 +131,11 @@ window.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', () => {
           const id = btn.dataset.id;
           if (confirm('Yakin ingin menghapus guru ini?')) {
-            window.electronAPI.hapusGuru(parseInt(id));
-            alert('Data guru berhasil dihapus.');
-            loadDataGuru();
+            fetch(`/api/guru/${id}`, { method: 'DELETE' })
+              .then(() => {
+                alert('Data guru berhasil dihapus.');
+                loadDataGuru();
+              });
           }
         });
       });
