@@ -1,7 +1,7 @@
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   let dataSantri = [];
   let dataGuru = [];
-  let dataKelas = JSON.parse(localStorage.getItem('kelas')) || [];
+  let dataKelas = [];
 
   const form = document.getElementById('form-kelas');
   const tbody = document.querySelector('#table-kelas tbody');
@@ -12,11 +12,22 @@ window.addEventListener('DOMContentLoaded', () => {
   const btnInput = document.getElementById('btn-input-kelas');
   const editId = sessionStorage.getItem('editKelasId');
 
-  // Ambil data santri dan guru dari localStorage (atau dummy jika belum ada)
-  dataSantri = JSON.parse(localStorage.getItem('santri')) || [];
-  dataGuru = JSON.parse(localStorage.getItem('guru')) || [];
+  // Fetch semua data
+  try {
+    const [santriRes, guruRes, kelasRes] = await Promise.all([
+      fetch('/api/santri'),
+      fetch('/api/guru'),
+      fetch('/api/kelas')
+    ]);
 
-  // Fungsi isi dropdown
+    dataSantri = await santriRes.json();
+    dataGuru = await guruRes.json();
+    dataKelas = await kelasRes.json();
+  } catch (err) {
+    console.error('Gagal memuat data:', err);
+    return;
+  }
+
   function isiDropdown(selectEl, items, placeholder) {
     selectEl.innerHTML = `<option disabled selected>-- Pilih ${placeholder} --</option>`;
     items.forEach(item => {
@@ -40,15 +51,14 @@ window.addEventListener('DOMContentLoaded', () => {
     isiDropdown(penerobosSelect, filtered, 'Penerobos');
   }
 
-  // Filter hanya guru dengan dapukan 'Guru' saja
-  const guruYangValid = dataGuru.filter(guru => guru.dapukan === 'Guru');
-  isiDropdown(waliKelasSelect, guruYangValid, 'Wali Kelas');
+  const guruValid = dataGuru.filter(guru => guru.dapukan === 'Guru');
+  isiDropdown(waliKelasSelect, guruValid, 'Wali Kelas');
 
   if (editId && form) {
     const kelasEdit = dataKelas.find(k => k.id === parseInt(editId));
     if (kelasEdit) {
       form.nama.value = kelasEdit.nama;
-      form.wali_kelas.value = kelasEdit.wali_kelas || '';
+      waliKelasSelect.value = kelasEdit.wali_kelas || '';
       updateSantriDropdowns(kelasEdit.nama);
       ketuaSelect.value = kelasEdit.ketua || '';
       kuSelect.value = kelasEdit.ku || '';
@@ -59,41 +69,41 @@ window.addEventListener('DOMContentLoaded', () => {
   if (form) {
     form.nama.addEventListener('input', e => {
       const namaKelas = e.target.value.trim();
-      if (namaKelas) {
-        updateSantriDropdowns(namaKelas);
-      } else {
-        isiDropdown(ketuaSelect, [], 'Ketua');
-        isiDropdown(kuSelect, [], 'KU');
-        isiDropdown(penerobosSelect, [], 'Penerobos');
-      }
+      namaKelas ? updateSantriDropdowns(namaKelas)
+                : [ketuaSelect, kuSelect, penerobosSelect].forEach(s => s.innerHTML = '');
     });
 
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
       const payload = {
-        id: editId ? parseInt(editId) : Date.now(),
         nama: form.nama.value.trim(),
-        wali_kelas: form.wali_kelas.value,
+        wali_kelas: waliKelasSelect.value,
         ketua: ketuaSelect.value,
         ku: kuSelect.value,
         penerobos: penerobosSelect.value
       };
 
-      if (editId) {
-        // Update kelas
-        const index = dataKelas.findIndex(k => k.id === parseInt(editId));
-        if (index !== -1) {
-          dataKelas[index] = payload;
+      try {
+        if (editId) {
+          await fetch(`/api/kelas/${editId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          sessionStorage.removeItem('editKelasId');
+        } else {
+          await fetch('/api/kelas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
         }
-        sessionStorage.removeItem('editKelasId');
-        localStorage.setItem('kelas', JSON.stringify(dataKelas));
-        window.location.href = './daftar-kelas.html';
-      } else {
-        // Tambah kelas baru
-        dataKelas.push(payload);
-        localStorage.setItem('kelas', JSON.stringify(dataKelas));
+
         alert('Data kelas berhasil disimpan!');
-        form.reset();
+        window.location.href = './daftar-kelas.html';
+      } catch (err) {
+        alert('Gagal menyimpan data.');
+        console.error(err);
       }
     });
 
@@ -114,7 +124,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Tampilkan daftar kelas di halaman daftar-kelas.html
   if (tbody) {
     tbody.innerHTML = '';
     dataKelas.forEach(kl => {
@@ -126,8 +135,8 @@ window.addEventListener('DOMContentLoaded', () => {
         <td>${kl.ku || '-'}</td>
         <td>${kl.penerobos || '-'}</td>
         <td>
-          <button class="btn-edit-form" data-id="${kl.id}" title="Edit">✏️</button>
-          <button class="btn-hapus" data-id="${kl.id}" title="Hapus">🗑️</button>
+          <button class="btn-edit-form" data-id="${kl.id}">✏️</button>
+          <button class="btn-hapus" data-id="${kl.id}">🗑️</button>
         </td>
       `;
       tbody.appendChild(tr);
@@ -141,13 +150,14 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     tbody.querySelectorAll('.btn-hapus').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (confirm('Yakin ingin menghapus kelas ini?')) {
-          const id = parseInt(btn.dataset.id);
-          dataKelas = dataKelas.filter(k => k.id !== id);
-          localStorage.setItem('kelas', JSON.stringify(dataKelas));
-          // Refresh halaman agar data terupdate
+      btn.addEventListener('click', async () => {
+        if (!confirm('Yakin ingin menghapus kelas ini?')) return;
+        try {
+          await fetch(`/api/kelas/${btn.dataset.id}`, { method: 'DELETE' });
           window.location.reload();
+        } catch (err) {
+          alert('Gagal menghapus data.');
+          console.error(err);
         }
       });
     });
