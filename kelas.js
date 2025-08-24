@@ -100,7 +100,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
 
         alert('Data kelas berhasil disimpan!');
-        window.location.href = './daftar-kelas.html';
+        window.location.href = 'daftar-kelas.html';
       } catch (err) {
         alert('Gagal menyimpan data.');
         console.error(err);
@@ -114,13 +114,13 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     document.getElementById('btn-kembali')?.addEventListener('click', () => {
       sessionStorage.removeItem('editKelasId');
-      window.location.href = './daftar-kelas.html';
+      window.location.href = 'daftar-kelas.html';
     });
   }
 
   if (btnInput) {
     btnInput.addEventListener('click', () => {
-      window.location.href = './input-kelas.html';
+      window.location.href = 'input-kelas.html';
     });
   }
 
@@ -145,7 +145,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     tbody.querySelectorAll('.btn-edit-form').forEach(btn => {
       btn.addEventListener('click', () => {
         sessionStorage.setItem('editKelasId', btn.dataset.id);
-        window.location.href = './input-kelas.html';
+        window.location.href = 'input-kelas.html';
       });
     });
 
@@ -163,3 +163,4 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   }
 });
+
