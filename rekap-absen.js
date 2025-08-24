@@ -1,5 +1,4 @@
-﻿window.addEventListener('DOMContentLoaded', () => {
-  // Ambil elemen-elemen penting dari DOM
+window.addEventListener('DOMContentLoaded', () => {
   const filterKelas = document.getElementById('filterKelas');
   const filterSesi = document.getElementById('filterSesi');
   const tanggalMulai = document.getElementById('tanggalMulai');
@@ -7,18 +6,20 @@
   const tombolRekap = document.getElementById('tombolRekap');
   const tbody = document.querySelector('#tabelRekap tbody');
   const totalEl = document.getElementById('totalKehadiran');
-  const container = document.getElementById('kehadiran-container'); // opsional, dipakai di halaman lain
+  const container = document.getElementById('kehadiran-container');
 
-  // Format tanggal ke YYYY-MM-DD
   const formatDate = (date) => date.toISOString().split('T')[0];
 
-  // === 1. MUAT DATA SESI ===
-  window.electronAPI.mintaDataSesi();
-  window.electronAPI.terimaDataSesi((sesiList) => {
-    if (!filterSesi) return;
+  let dataSantri = [];
+  let dataAbsen = [];
+  let dataSesi = [];
 
+  // === 1. MUAT DATA SESI ===
+  fetch('data/sesi.json').then(res => res.json()).then(sesiList => {
+    dataSesi = sesiList;
+    if (!filterSesi) return;
     filterSesi.innerHTML = '<option value="">Semua Sesi</option>';
-    sesiList.forEach((sesi) => {
+    dataSesi.forEach(sesi => {
       const opt = document.createElement('option');
       opt.value = sesi;
       opt.textContent = sesi;
@@ -27,9 +28,9 @@
   });
 
   // === 2. MUAT DATA SANTRI ===
-  window.electronAPI.mintaDataSantri();
-  window.electronAPI.terimaDataSantri((dataSantri) => {
-    // Isi dropdown kelas
+  fetch('data/santri.json').then(res => res.json()).then(santri => {
+    dataSantri = santri;
+
     if (filterKelas) {
       const kelasSet = new Set();
       dataSantri.forEach(s => {
@@ -51,26 +52,41 @@
       });
     }
 
-    // === 3. OPSIONAL: HITUNG PERSENTASE PER KELAS SELAMA 7 HARI TERAKHIR ===
+    // === 3. OPSIONAL: KEHADIRAN PER KELAS 7 HARI TERAKHIR ===
     if (container) {
       const today = new Date();
       const lastWeek = new Date();
       lastWeek.setDate(today.getDate() - 7);
 
-      const semuaKelas = [...new Set(dataSantri.map(s => s.kelas).filter(Boolean))];
+      fetchDataAbsen().then(absenList => {
+        const semuaKelas = [...new Set(dataSantri.map(s => s.kelas_utama).filter(Boolean))];
+        container.innerHTML = '';
 
-      semuaKelas.forEach(kelas => {
-        const filter = {
-          kelas,
-          dari: formatDate(lastWeek),
-          sampai: formatDate(today)
-        };
-        window.electronAPI.mintaDataAbsen(filter);
+        semuaKelas.forEach(kelas => {
+          const filtered = absenList.filter(absen =>
+            absen.kelas === kelas &&
+            absen.tanggal >= formatDate(lastWeek) &&
+            absen.tanggal <= formatDate(today)
+          );
+
+          const hadir = filtered.filter(a => a.status === 'hadir').length;
+          const total = filtered.length;
+          const persentase = total > 0 ? ((hadir / total) * 100).toFixed(1) : '0.0';
+
+          const card = document.createElement('div');
+          card.className = 'kelas-card';
+          card.innerHTML = `
+            <h3>${kelas}</h3>
+            <div class="persentase">${persentase}%</div>
+            <div class="detail">${hadir}/${total} hadir</div>
+          `;
+          container.appendChild(card);
+        });
       });
     }
   });
 
-  // === 4. TOMBOL TAMPILKAN REKAP PER SANTRI ===
+  // === 4. TOMBOL REKAP ===
   if (tombolRekap) {
     tombolRekap.addEventListener('click', () => {
       const kelas = filterKelas.value;
@@ -83,42 +99,21 @@
         return;
       }
 
-      const filter = { kelas, sesi, dari, sampai };
-      window.electronAPI.mintaDataAbsen(filter);
+      fetchDataAbsen().then(absenList => {
+        const filtered = absenList.filter(absen => {
+          const matchKelas = !kelas || absen.kelas === kelas;
+          const matchSesi = !sesi || absen.sesi === sesi;
+          const matchTanggal = absen.tanggal >= dari && absen.tanggal <= sampai;
+          return matchKelas && matchSesi && matchTanggal;
+        });
+
+        tampilkanRekap(filtered);
+      });
     });
   }
 
-  // === 5. TAMPILKAN DATA ABSEN PER SANTRI ===
-  window.electronAPI.terimaDataAbsen((absenList) => {
-    // Apakah ini untuk container (per kelas)?
-    if (container && absenList.length > 0 && absenList[0].kelas) {
-      const dataKelas = {};
-      absenList.forEach(absen => {
-        if (!dataKelas[absen.kelas]) {
-          dataKelas[absen.kelas] = { hadir: 0, total: 0 };
-        }
-        if (absen.status === 'hadir') dataKelas[absen.kelas].hadir++;
-        dataKelas[absen.kelas].total++;
-      });
-
-      container.innerHTML = '';
-      for (const [kelas, data] of Object.entries(dataKelas)) {
-        const persentase = data.total > 0 ? ((data.hadir / data.total) * 100).toFixed(1) : 0;
-
-        const card = document.createElement('div');
-        card.className = 'kelas-card';
-        card.innerHTML = `
-          <h3>${kelas}</h3>
-          <div class="persentase">${persentase}%</div>
-          <div class="detail">${data.hadir}/${data.total} hadir</div>
-        `;
-        container.appendChild(card);
-      }
-
-      return; // selesai di sini jika ini konteks "per kelas"
-    }
-
-    // Kalau tidak, berarti konteksnya rekap per santri (tabel)
+  // === 5. FUNGSI TAMPILKAN REKAP KE TABEL ===
+  function tampilkanRekap(absenList) {
     if (!tbody) return;
 
     const rekap = {};
@@ -141,15 +136,13 @@
       }
     });
 
-    // Render ke tabel
     tbody.innerHTML = '';
     let totalHadir = 0;
     let totalEntri = 0;
 
     Object.entries(rekap).forEach(([nama, data]) => {
       const total = data.hadir + data.izin + data.sakit + data.alpa;
-      const persentase = total > 0 ? Math.round((data.hadir / total) * 100) : 0;
-
+      const persen = total > 0 ? Math.round((data.hadir / total) * 100) : 0;
       totalHadir += data.hadir;
       totalEntri += total;
 
@@ -161,15 +154,34 @@
         <td>${data.sakit}</td>
         <td>${data.alpa}</td>
         <td>${data.keterangan.join('; ')}</td>
-        <td>${persentase}%</td>
+        <td>${persen}%</td>
       `;
       tbody.appendChild(row);
     });
 
-    // Tampilkan total persentase keseluruhan
     if (totalEl) {
       const totalPersen = totalEntri > 0 ? ((totalHadir / totalEntri) * 100).toFixed(1) : '0.0';
       totalEl.textContent = `Jumlah persentase kehadiran keseluruhan: ${totalPersen}%`;
     }
-  });
+  }
+
+  // === HELPER: FETCH DATA ABSEN ===
+  function fetchDataAbsen() {
+    return new Promise((resolve, reject) => {
+      const local = localStorage.getItem('absenData');
+      if (local) {
+        try {
+          const json = JSON.parse(local);
+          resolve(json);
+        } catch (e) {
+          reject(e);
+        }
+      } else {
+        fetch('data/absen.json')
+          .then(res => res.json())
+          .then(json => resolve(json))
+          .catch(err => reject(err));
+      }
+    });
+  }
 });
