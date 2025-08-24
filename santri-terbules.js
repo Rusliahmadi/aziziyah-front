@@ -4,11 +4,12 @@ window.addEventListener('DOMContentLoaded', () => {
   const tombolTampilkan = document.getElementById('tombolTampilkan');
   const tbody = document.querySelector('#tabelSantri tbody');
 
-  // Tombol "Tampilkan" ditekan
+  // Ketika tombol "Tampilkan" diklik
   tombolTampilkan.addEventListener('click', () => {
     const dari = tanggalMulai.value;
     const sampai = tanggalSampai.value;
 
+    // Validasi input tanggal
     if (!dari || !sampai) {
       alert('Isi kedua tanggal terlebih dahulu.');
       return;
@@ -19,6 +20,7 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Kirim permintaan data absensi dengan filter tanggal
     const filter = { kelas: '', sesi: '', dari, sampai };
     window.electronAPI.mintaDataAbsen(filter);
   });
@@ -45,14 +47,18 @@ window.addEventListener('DOMContentLoaded', () => {
       else if (absen.status === 'alpa') rekap[absen.nama].alpa++;
     });
 
-    const sorted = Object.values(rekap).map(data => ({
-      ...data,
-      total: data.izin + data.sakit + data.alpa
-    })).sort((a, b) => b.total - a.total);
+    // Konversi objek rekap ke array, hitung total ketidakhadiran dan urutkan
+    const sorted = Object.values(rekap)
+      .map(data => ({
+        ...data,
+        total: data.izin + data.sakit + data.alpa
+      }))
+      .sort((a, b) => b.total - a.total);
 
+    // Render ke tabel
     tbody.innerHTML = '';
     sorted.forEach(s => {
-      if (s.total === 0) return;
+      if (s.total === 0) return; // Lewatkan yang tidak memiliki ketidakhadiran
 
       const row = document.createElement('tr');
       row.innerHTML = `
@@ -65,6 +71,11 @@ window.addEventListener('DOMContentLoaded', () => {
       `;
       tbody.appendChild(row);
     });
+
+    // Jika tidak ada data tampilkan pesan
+    if (sorted.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6">Tidak ada data absensi untuk rentang tanggal tersebut.</td></tr>`;
+    }
   });
 
   // Tombol kembali (jika ada)
