@@ -8,17 +8,18 @@ window.addEventListener('DOMContentLoaded', () => {
   let semuaMateri = [];
   let dataRekap = [];
 
-  // 1. Minta data materi
+  // === 1. MINTA DATA MATERI ===
   window.electronAPI.mintaDataMateri();
   window.electronAPI.terimaDataMateri((materiList) => {
     semuaMateri = materiList;
 
+    // Jika halaman rekap, dan data rekap sudah tersedia, render tabel
     if (isRekapPage && dataRekap.length > 0) {
       renderTabel(dataRekap);
     }
   });
 
-  // 2. Minta data rekap materi
+  // === 2. MINTA DATA REKAP MATERI ===
   window.electronAPI.mintaRekapMateri({});
 
   window.electronAPI.onBalasRekapMateri((res) => {
@@ -42,7 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // === TABEL REKAP ===
+  // === FUNGSI: TAMPILKAN TABEL ===
   function renderTabel(dataRekap) {
     if (!dataRekap || dataRekap.length === 0) {
       tbody.innerHTML = `<tr><td colspan="6">Tidak ada data.</td></tr>`;
@@ -68,7 +69,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // === CHART REKAP ===
+  // === FUNGSI: RENDER CHART (INDEX) ===
   function renderChart(data) {
     const ctx = canvas.getContext('2d');
     const labels = [];
@@ -104,7 +105,7 @@ window.addEventListener('DOMContentLoaded', () => {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false, // ✅ agar chart mengikuti ukuran div.chart-wrapper
+        maintainAspectRatio: false, // Agar chart mengikuti ukuran div/chart-wrapper
         scales: {
           y: {
             beginAtZero: true,
