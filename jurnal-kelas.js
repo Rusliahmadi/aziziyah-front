@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('form-jurnal');
   const tanggalInput = document.getElementById('tanggal');
   const hariInput = document.getElementById('hari');
@@ -20,40 +20,43 @@
 
   // === FORM INPUT ===
   if (form) {
-    // Load kelas
-    window.electronAPI.mintaDataKelas();
-    window.electronAPI.terimaDataKelas((kelasList) => {
-      kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>';
-      kelasList.forEach(kelas => {
-        const opt = document.createElement('option');
-        opt.value = kelas.nama || kelas;
-        opt.textContent = kelas.nama || kelas;
-        kelasSelect.appendChild(opt);
+    // Load Kelas
+    fetch('/api/kelas')
+      .then(res => res.json())
+      .then(kelasList => {
+        kelasSelect.innerHTML = '<option value="">-- Pilih Kelas --</option>';
+        kelasList.forEach(kelas => {
+          const opt = document.createElement('option');
+          opt.value = kelas.nama;
+          opt.textContent = kelas.nama;
+          kelasSelect.appendChild(opt);
+        });
       });
-    });
 
-    // Load guru (hanya Guru & Guru Bujang)
-    window.electronAPI.mintaDataGuru();
-    window.electronAPI.terimaDataGuru((guruList) => {
-      guruSelect.innerHTML = '<option value="">-- Pilih Guru --</option>';
-      const filteredGuru = guruList.filter(guru =>
-        guru.dapukan === 'Guru' || guru.dapukan === 'Guru Bujang'
-      );
-      filteredGuru.forEach(guru => {
-        const opt = document.createElement('option');
-        opt.value = guru.nama;
-        opt.textContent = guru.nama;
-        guruSelect.appendChild(opt);
+    // Load Guru
+    fetch('/api/guru')
+      .then(res => res.json())
+      .then(guruList => {
+        guruSelect.innerHTML = '<option value="">-- Pilih Guru --</option>';
+        const filteredGuru = guruList.filter(guru =>
+          guru.dapukan === 'Guru' || guru.dapukan === 'Guru Bujang'
+        );
+        filteredGuru.forEach(guru => {
+          const opt = document.createElement('option');
+          opt.value = guru.nama;
+          opt.textContent = guru.nama;
+          guruSelect.appendChild(opt);
+        });
       });
-    });
 
-    // Load materi
-    window.electronAPI.mintaDataMateri();
-    window.electronAPI.terimaDataMateri((materiList) => {
-      daftarMateri = materiList;
-    });
+    // Load Materi
+    fetch('/api/materi')
+      .then(res => res.json())
+      .then(materiList => {
+        daftarMateri = materiList;
+      });
 
-    // Filter materi saat kelas dipilih
+    // Kelas berubah → filter materi
     kelasSelect.addEventListener('change', () => {
       const kelasTerpilih = kelasSelect.value;
       materiSelect.innerHTML = '<option value="">-- Pilih Materi --</option>';
@@ -73,7 +76,7 @@
       });
     });
 
-    // Auto isi target halaman dari materi
+    // Materi berubah → isi target
     materiSelect.addEventListener('change', () => {
       const opsi = materiSelect.selectedOptions[0];
       targetInput.value = opsi?.dataset.targetPerHari || '';
@@ -81,7 +84,7 @@
       statusInput.value = '';
     });
 
-    // Hitung status tercapai
+    // Hitung status
     tercapaiInput.addEventListener('input', () => {
       const target = Number(targetInput.value);
       const dicapai = Number(tercapaiInput.value);
@@ -92,18 +95,14 @@
       statusInput.value = dicapai >= target ? 'Tercapai' : 'Belum tercapai';
     });
 
-    // Auto hitung nama hari
+    // Hitung nama hari
     tanggalInput.addEventListener('change', () => {
       const tanggal = new Date(tanggalInput.value);
-      if (isNaN(tanggal)) {
-        hariInput.value = '';
-        return;
-      }
       const hariNama = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-      hariInput.value = hariNama[tanggal.getDay()];
+      hariInput.value = isNaN(tanggal) ? '' : hariNama[tanggal.getDay()];
     });
 
-    // Submit form
+    // Submit
     form.addEventListener('submit', (e) => {
       e.preventDefault();
 
@@ -130,47 +129,51 @@
         jam_selesai: jamSelesai.value
       };
 
-      window.electronAPI.kirimDataJurnal(dataJurnal);
-      alert('Jurnal berhasil disimpan!');
-
-      // Reset
-      form.reset();
-      materiSelect.innerHTML = '<option value="">-- Pilih Materi --</option>';
+      fetch('/api/jurnal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataJurnal)
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('Gagal menyimpan jurnal');
+          return res.json();
+        })
+        .then(() => {
+          alert('Jurnal berhasil disimpan!');
+          form.reset();
+          materiSelect.innerHTML = '<option value="">-- Pilih Materi --</option>';
+        })
+        .catch(err => {
+          alert('Terjadi kesalahan saat menyimpan jurnal');
+          console.error(err);
+        });
     });
   }
 
   // === REKAP JURNAL ===
   if (tabelJurnal) {
-    window.electronAPI.mintaDataJurnal();
+    fetch('/api/jurnal')
+      .then(res => res.json())
+      .then(dataList => {
+        dataJurnal = dataList;
 
-    window.electronAPI.terimaDataJurnal((dataList) => {
-      if (!Array.isArray(dataList)) {
-        console.warn('Data jurnal tidak valid:', dataList);
-        return;
-      }
+        const guruUnik = [...new Set(dataList.map(item => item.guru))];
+        selectGuru.innerHTML = '<option value="">-- Semua Guru --</option>';
+        guruUnik.forEach(guru => {
+          const opt = document.createElement('option');
+          opt.value = guru;
+          opt.textContent = guru;
+          selectGuru.appendChild(opt);
+        });
 
-      dataJurnal = dataList;
-
-      // Isi filter guru
-      const guruUnik = [...new Set(dataList.map(item => item.guru))];
-      selectGuru.innerHTML = '<option value="">-- Semua Guru --</option>';
-      guruUnik.forEach(guru => {
-        const opt = document.createElement('option');
-        opt.value = guru;
-        opt.textContent = guru;
-        selectGuru.appendChild(opt);
+        renderTabel(dataList);
       });
 
-      renderTabel(dataList);
-    });
-
-    // Filter guru
     selectGuru.addEventListener('change', () => {
       const selectedGuru = selectGuru.value;
       const filtered = selectedGuru
         ? dataJurnal.filter(item => item.guru === selectedGuru)
         : dataJurnal;
-
       renderTabel(filtered);
     });
   }
@@ -184,7 +187,7 @@
     return `${Math.floor(diff / 60)}j ${diff % 60}m`;
   }
 
-  // Render tabel
+  // Render Tabel
   function renderTabel(data) {
     tabelJurnal.innerHTML = '';
     data.forEach(item => {
