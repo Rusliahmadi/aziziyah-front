@@ -305,6 +305,7 @@ function initInputPage() {
 
   document.getElementById('btn-kembali')?.addEventListener('click', () => {
     sessionStorage.removeItem('formRaport');
-    window.location.href = 'raport.html';
+    window.location.href = 'data-santri.html';
   });
 }
+
