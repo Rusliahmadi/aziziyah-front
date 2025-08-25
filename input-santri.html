@@ -9,23 +9,49 @@
 
   <h1>Input Data Santri</h1>
 
-  <form id="form-santri">
-    <input name="nama" required>
-    <input name="alias">
-    <select name="jk"><option value="L">L</option><option value="P">P</option></select>
-    <input type="date" name="tgl_lahir">
-    <input name="wali">
-    <input name="alamat">
-    <input type="date" name="tgl_masuk">
-    <input name="kelas_utama">
-    <input name="kelas_extra">
-    <input name="kelompok">
-    <button type="submit">Simpan</button>
-    <button type="button" id="btn-batal">Batal</button>
-  </form>
+ <form id="form-santri">
+  <label>Nama:</label>
+  <input type="text" name="nama" id="nama" required>
+
+  <label>Alias:</label>
+  <input type="text" name="alias" id="alias">
+
+  <label>Jenis Kelamin:</label>
+  <select name="jk" id="jk">
+    <option value="L">Laki-laki</option>
+    <option value="P">Perempuan</option>
+  </select>
+
+  <label>Tanggal Lahir:</label>
+  <input type="date" name="tgl_lahir" id="tgl_lahir">
+
+  <label>Wali:</label>
+  <input type="text" name="wali" id="wali">
+
+  <label>Alamat:</label>
+  <input type="text" name="alamat" id="alamat">
+
+  <label>Tanggal Masuk:</label>
+  <input type="date" name="tgl_masuk" id="tgl_masuk">
+
+  <label>Kelas Utama:</label>
+  <input type="text" name="kelas_utama" id="kelas_utama">
+
+  <label>Kelas Ekstra:</label>
+  <input type="text" name="kelas_extra" id="kelas_extra">
+
+  <label>Kelompok:</label>
+  <input type="text" name="kelompok" id="kelompok">
+
+  <div style="margin-top: 1em;">
+    <button type="submit">💾 Simpan</button>
+    <button type="button" id="btn-batal">❌ Batal</button>
+  </div>
+</form>
 
   <script src="santri.js"></script>
 </body>
 </html>
+
 
 
