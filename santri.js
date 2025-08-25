@@ -1,4 +1,6 @@
 window.addEventListener('DOMContentLoaded', () => {
+  const API_URL = 'https://aziziyah-back-mysqlhost.up.railway.app/api/santri';
+
   const tbody = document.querySelector('#table-santri tbody');
   const filterKelas = document.getElementById('filterKelas');
   const filterKelompok = document.getElementById('filterKelompok');
@@ -8,76 +10,82 @@ window.addEventListener('DOMContentLoaded', () => {
   const editId = sessionStorage.getItem('editSantriId');
   let semuaDataSantri = [];
 
+  // Format tanggal
   function toISODate(tanggal) {
     if (!tanggal) return '';
     const parts = tanggal.split('/');
     if (parts.length !== 3) return tanggal;
-    const month = parts[0].padStart(2, '0');
-    const day = parts[1].padStart(2, '0');
-    const year = parts[2];
-    return `${year}-${month}-${day}`;
+    const [month, day, year] = parts;
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   }
 
-                          // Ambil dan tampilkan data santri (READ)
-  if (tbody) {
-    fetch('https://aziziyah-back-mysqlhost.up.railway.app/api/santri')
-      .then(response => response.json())
-      .then(dataSantri => {
-        // Gabungkan dengan localStorage jika ada perubahan di browser
-        const localData = JSON.parse(localStorage.getItem('santriBaru')) || [];
-        const combined = [...dataSantri, ...localData];
-
-        semuaDataSantri = combined.filter(s => s.status === 'aktif');
-        renderTabelSantri(semuaDataSantri);
-        if (filterKelas && filterKelompok) isiDropdownFilter(semuaDataSantri);
+  // Tampilkan data santri
+  function loadSantri() {
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        semuaDataSantri = data;
+        renderTabelSantri(data);
+        isiDropdownFilter(data);
       })
-      .catch(error => {
-        console.error('Gagal memuat data santri:', error);
+      .catch(err => {
+        console.error('Gagal memuat data:', err);
       });
   }
 
+  // Tampilkan di tabel
   function renderTabelSantri(data) {
-    if (!tbody) return;
     tbody.innerHTML = '';
-
     if (data.length === 0) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td colspan="12">Tidak ada data</td>`;
-      tbody.appendChild(tr);
+      tbody.innerHTML = `<tr><td colspan="12">Tidak ada data</td></tr>`;
       return;
     }
 
-    data.forEach((santri) => {
+    data.forEach(s => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
+        <td><a href="laporan-santri.html?id=${s.id}" class="nama-santri-link">${s.nama}</a></td>
+        <td>${s.alias || '-'}</td>
+        <td>${s.jk || '-'}</td>
+        <td>${s.tgl_lahir || '-'}</td>
+        <td>${s.wali || '-'}</td>
+        <td>${s.alamat || '-'}</td>
+        <td>${s.tgl_masuk || '-'}</td>
+        <td>${s.kelas_utama || '-'}</td>
+        <td>${s.kelas_extra || '-'}</td>
+        <td>${s.kelompok || '-'}</td>
+        <td>${s.status || '-'}</td>
         <td>
-          <a href="laporan-santri.html?id=${santri.id}" 
-             style="color: inherit; text-decoration: none;" 
-             class="nama-santri-link">${santri.nama}</a>
+          <button class="btn-edit" data-id="${s.id}">✏️</button>
+          <button class="btn-delete" data-id="${s.id}">🗑️</button>
         </td>
-        <td>${santri.alias || '-'}</td>
-        <td>${santri.jk || '-'}</td>
-        <td>${santri.tgl_lahir}</td>
-        <td>${santri.wali}</td>
-        <td>${santri.alamat}</td>
-        <td>${santri.tgl_masuk}</td>
-        <td>${santri.kelas_utama || '-'}</td>
-        <td>${santri.kelas_extra || '-'}</td>
-        <td>${santri.kelompok || '-'}</td>
-        <td>${santri.status || '-'}</td>
-        <td><button class="btn-edit" data-id="${santri.id}">✏️</button></td>
       `;
       tbody.appendChild(tr);
     });
 
     document.querySelectorAll('.btn-edit').forEach(btn => {
       btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        sessionStorage.setItem('editSantriId', id);
+        sessionStorage.setItem('editSantriId', btn.dataset.id);
         window.location.href = 'input-santri.html';
       });
     });
+
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (confirm('Yakin ingin menghapus santri ini?')) {
+          fetch(`${API_URL}/${btn.dataset.id}`, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(() => {
+              alert('Santri dihapus.');
+              loadSantri();
+            })
+            .catch(err => console.error('Gagal menghapus:', err));
+        }
+      });
+    });
   }
+
+  // Isi dropdown filter
   function isiDropdownFilter(data) {
     const kelasSet = new Set();
     const kelompokSet = new Set();
@@ -88,27 +96,29 @@ window.addEventListener('DOMContentLoaded', () => {
       if (s.kelompok) kelompokSet.add(s.kelompok);
     });
 
-    [...kelasSet].sort().forEach(kelas => {
-      const option = document.createElement('option');
-      option.value = kelas;
-      option.textContent = kelas;
-      filterKelas.appendChild(option);
+    filterKelas.innerHTML = `<option value="">Semua</option>`;
+    filterKelompok.innerHTML = `<option value="">Semua</option>`;
+
+    [...kelasSet].sort().forEach(k => {
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = k;
+      filterKelas.appendChild(opt);
     });
 
-    [...kelompokSet].sort().forEach(kelompok => {
-      const option = document.createElement('option');
-      option.value = kelompok;
-      option.textContent = kelompok;
-      filterKelompok.appendChild(option);
+    [...kelompokSet].sort().forEach(k => {
+      const opt = document.createElement('option');
+      opt.value = k;
+      opt.textContent = k;
+      filterKelompok.appendChild(opt);
     });
   }
 
+  // Filter pencarian
   function filterDataSantri() {
-    if (!filterKelas || !filterKelompok || !searchInput) return;
-
     const selectedKelas = filterKelas.value;
     const selectedKelompok = filterKelompok.value;
-    const searchTerm = searchInput.value.toLowerCase().trim();
+    const searchTerm = searchInput.value.toLowerCase();
 
     let hasil = semuaDataSantri.filter(s =>
       (selectedKelas === '' || s.kelas_utama === selectedKelas || s.kelas_extra === selectedKelas) &&
@@ -117,95 +127,82 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (searchTerm) {
       hasil = hasil.filter(s =>
-        (s.nama && s.nama.toLowerCase().includes(searchTerm)) ||
-        (s.alias && s.alias.toLowerCase().includes(searchTerm))
+        s.nama?.toLowerCase().includes(searchTerm) ||
+        s.alias?.toLowerCase().includes(searchTerm)
       );
     }
 
     renderTabelSantri(hasil);
   }
 
-  if (filterKelas) filterKelas.addEventListener('change', filterDataSantri);
-  if (filterKelompok) filterKelompok.addEventListener('change', filterDataSantri);
-  if (searchInput) searchInput.addEventListener('input', filterDataSantri);
-  if (btnInputSantri) {
-    btnInputSantri.addEventListener('click', () => {
-      sessionStorage.removeItem('editSantriId');
-      window.location.href = 'input-santri.html';
-    });
-  }
+  // Event filter
+  filterKelas?.addEventListener('change', filterDataSantri);
+  filterKelompok?.addEventListener('change', filterDataSantri);
+  searchInput?.addEventListener('input', filterDataSantri);
+
+  // Tombol tambah
+  btnInputSantri?.addEventListener('click', () => {
+    sessionStorage.removeItem('editSantriId');
+    window.location.href = 'input-santri.html';
+  });
+
+  // Mode form (input-santri.html)
   if (form) {
     if (editId) {
-      // Mode EDIT
-      fetch('data/santri.json')
-        .then(response => response.json())
-        .then(dataSantri => {
-          const localData = JSON.parse(localStorage.getItem('santriBaru')) || [];
-          const semua = [...dataSantri, ...localData];
-          const santri = semua.find(s => s.id === parseInt(editId));
-          if (santri) {
-            form.nama.value = santri.nama;
-            form.alias.value = santri.alias || '';
-            form.jk.value = santri.jk || '';
-            form.tgl_lahir.value = toISODate(santri.tgl_lahir);
-            form.wali.value = santri.wali;
-            form.alamat.value = santri.alamat;
-            form.tgl_masuk.value = toISODate(santri.tgl_masuk);
-          }
+      // Edit Mode
+      fetch(`${API_URL}/${editId}`)
+        .then(res => res.json())
+        .then(s => {
+          form.nama.value = s.nama;
+          form.alias.value = s.alias || '';
+          form.jk.value = s.jk || '';
+          form.tgl_lahir.value = s.tgl_lahir || '';
+          form.wali.value = s.wali || '';
+          form.alamat.value = s.alamat || '';
+          form.tgl_masuk.value = s.tgl_masuk || '';
+          form.kelas_utama.value = s.kelas_utama || '';
+          form.kelas_extra.value = s.kelas_extra || '';
+          form.kelompok.value = s.kelompok || '';
         });
 
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const dataBaru = {
-          id: parseInt(editId),
-          nama: form.nama.value,
-          alias: form.alias.value,
-          jk: form.jk.value,
-          tgl_lahir: form.tgl_lahir.value,
-          wali: form.wali.value,
-          alamat: form.alamat.value,
-          tgl_masuk: form.tgl_masuk.value,
-          status: 'aktif'
-        };
-
-        const dataSebelumnya = JSON.parse(localStorage.getItem('santriBaru')) || [];
-        const baru = dataSebelumnya.map(s => s.id === dataBaru.id ? dataBaru : s);
-        localStorage.setItem('santriBaru', JSON.stringify(baru));
-
-        alert('Data santri berhasil diperbarui!');
-        sessionStorage.removeItem('editSantriId');
-        window.location.href = 'data-santri.html';
+        const dataBaru = ambilDataForm();
+        fetch(`${API_URL}/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dataBaru)
+        })
+          .then(res => res.json())
+          .then(() => {
+            alert('Data santri diperbarui.');
+            sessionStorage.removeItem('editSantriId');
+            window.location.href = 'data-santri.html';
+          })
+          .catch(err => console.error('Gagal update:', err));
       });
 
     } else {
-      // Mode TAMBAH
+      // Tambah Mode
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const semua = JSON.parse(localStorage.getItem('santriBaru')) || [];
-        const idBaru = Date.now(); // ID unik sementara
-        const dataBaru = {
-          id: idBaru,
-          nama: form.nama.value,
-          alias: form.alias.value,
-          jk: form.jk.value,
-          tgl_lahir: form.tgl_lahir.value,
-          wali: form.wali.value,
-          alamat: form.alamat.value,
-          tgl_masuk: form.tgl_masuk.value,
-          status: 'aktif'
-        };
-
-        semua.push(dataBaru);
-        localStorage.setItem('santriBaru', JSON.stringify(semua));
-        alert('Data berhasil disimpan!');
-        form.reset();
+        const dataBaru = ambilDataForm();
+        fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dataBaru)
+        })
+          .then(res => res.json())
+          .then(() => {
+            alert('Santri ditambahkan.');
+            window.location.href = 'data-santri.html';
+          })
+          .catch(err => console.error('Gagal simpan:', err));
       });
     }
 
-    // Tombol batal dan kembali
     document.getElementById('btn-batal')?.addEventListener('click', () => {
       sessionStorage.removeItem('editSantriId');
-      form.reset();
       window.location.href = 'data-santri.html';
     });
 
@@ -214,7 +211,23 @@ window.addEventListener('DOMContentLoaded', () => {
       window.location.href = 'data-santri.html';
     });
   }
+
+  function ambilDataForm() {
+    return {
+      nama: form.nama.value,
+      alias: form.alias.value,
+      jk: form.jk.value,
+      tgl_lahir: form.tgl_lahir.value,
+      wali: form.wali.value,
+      alamat: form.alamat.value,
+      tgl_masuk: form.tgl_masuk.value,
+      kelas_utama: form.kelas_utama?.value || '',
+      kelas_extra: form.kelas_extra?.value || '',
+      kelompok: form.kelompok?.value || '',
+      status: 'aktif'
+    };
+  }
+
+  // Mulai load data awal
+  if (tbody) loadSantri();
 });
-
-
-
